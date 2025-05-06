@@ -1,0 +1,267 @@
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
+from scipy.stats import kstest, expon
+
+# Funciones de cálculo (sin cambios)
+def calcular_factor_material_broca(material):
+    materiales = {
+        "acero rapido": 1.0,
+        "carburo": 1.5,
+        "ceramico": 2.0,
+        "diamante": 3.0
+    }
+    return materiales.get(material.lower(), 1.0)
+
+def calcular_factor_metal_trabajado(metal):
+    metales = {
+        "aluminio": 1.0,
+        "acero": 1.5,
+        "hierro fundido": 1.3,
+        "titanio": 2.0
+    }
+    return metales.get(metal.lower(), 1.0)
+
+def calcular_factor_figura(figura):
+    figuras = {
+        "cilindro": 1.0,
+        "cubo": 1.2,
+        "rosca": 1.5,
+        "cavidad": 1.8
+    }
+    return figuras.get(figura.lower(), 1.0)
+
+def calcular_desgaste(velocidad_rpm, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura):
+    factor_broca = calcular_factor_material_broca(tipo_broca)
+    factor_metal = calcular_factor_metal_trabajado(tipo_metal)
+    factor_figura = calcular_factor_figura(tipo_figura)
+
+    volumen_broca = largo * ancho
+    esfuerzo_total = velocidad_rpm * avance * volumen_broca
+
+    # Ajuste realista del desgaste
+    desgaste = (esfuerzo_total * factor_metal * factor_figura) / (factor_broca * 1e6)
+    return desgaste
+
+def calcular_ciclos_vida(desgaste):
+    desgaste_maximo = 100
+    ciclos = int(desgaste_maximo / desgaste) if desgaste > 0 else 0
+    return ciclos
+
+# Función para manejar la animación
+def animar_torno(ciclos, velocidad_rpm, largo, ancho):
+    canvas.delete("all")  # Borra todo del canvas
+
+    ciclo_maximo = min(ciclos, 30)  # Máximo 30 ciclos visibles
+    avance_por_ciclo = 6
+
+    x_inicial = 60
+    y_inicial = 150
+    radio = 50
+
+    # Tamaño de la broca basado en valores reales
+    largo_px = int(largo / 5)
+    ancho_px = int(ancho / 3)
+    largo_px = max(20, min(largo_px, 100))
+    ancho_px = max(5, min(ancho_px, 30))
+
+    # Dibujar el torno (pieza circular)
+    torno = canvas.create_oval(220, y_inicial - radio, 220 + 2*radio, y_inicial + radio, outline='black', width=3)
+    canvas.create_line(220 + radio, y_inicial, 220 + radio, y_inicial + 80, fill='black', width=3)  # eje base
+    canvas.create_oval(220 + radio - 10, y_inicial + 80, 220 + radio + 10, y_inicial + 100, fill='black')
+
+    # Crear la broca inicial
+    broca_x = x_inicial
+    broca = canvas.create_rectangle(broca_x, y_inicial - ancho_px//2,
+                                    broca_x + largo_px, y_inicial + ancho_px//2, fill='gray')
+
+    # Animación
+    for ciclo in range(ciclo_maximo):
+        # Cambiar grosor del torno (simula rotación)
+        canvas.itemconfig(torno, width=2 + (ciclo % 3))
+
+        # Color dinámico
+        factor_color = ciclo / ciclo_maximo
+        if factor_color < 0.4:
+            color = 'gray'
+        elif factor_color < 0.8:
+            color = 'orange'
+        else:
+            color = 'red'
+        canvas.itemconfig(broca, fill=color)
+
+        # Mover broca a la derecha
+        canvas.move(broca, avance_por_ciclo, 0)
+
+        ventana.update_idletasks()
+        ventana.update()
+        canvas.after(300)
+
+    # Mensaje al romperse
+    canvas.create_text(200, y_inicial - 80, text="¡Broca rota!", fill="red", font=("Arial", 12, "bold"))
+
+#Función agregada para simular varias veces el proceso con pequeñas variaciones aleatorias.
+import numpy as np
+
+def simular_una_vez(velocidad, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura):
+    # Variación aleatoria controlada (5% ruido gaussiano)
+    velocidad_real = np.random.normal(velocidad, 0.05 * velocidad)
+    largo_real = np.random.normal(largo, 0.03 * largo)
+    ancho_real = np.random.normal(ancho, 0.03 * ancho)
+    avance_real = np.random.normal(avance, 0.1 * avance)
+
+    desgaste = calcular_desgaste(velocidad_real, largo_real, ancho_real, avance_real, tipo_broca, tipo_metal, tipo_figura)
+    ciclos = calcular_ciclos_vida(desgaste)
+    return ciclos
+
+# Función principal para el cálculo y animación
+def calcular():
+    try:
+        # Obtener valores de los campos de entrada
+        velocidad = float(entry_velocidad.get())
+        largo = float(entry_largo.get())
+        ancho = float(entry_ancho.get())
+        avance = float(entry_avance.get())
+        tipo_broca = entry_broca.get()
+        tipo_metal = entry_metal.get()
+        tipo_figura = entry_figura.get()
+        tiempo_ciclo = float(entry_tiempo.get())
+
+        # Calcular el desgaste y ciclos de vida
+        desgaste = calcular_desgaste(velocidad, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura)
+        ciclos = calcular_ciclos_vida(desgaste)
+        tiempo_total_min = ciclos * tiempo_ciclo
+        tiempo_total_hr = tiempo_total_min / 60
+
+        # Mostrar los resultados en el GUI
+        label_resultado.config(text=f"Desgaste estimado por ciclo: {desgaste:.4f}\n"
+                                   f"Vida útil estimada: {ciclos} ciclos\n"
+                                   f"Tiempo total estimado: {tiempo_total_min:.2f} minutos ({tiempo_total_hr:.2f} horas)")
+        # Simulaciones múltiples con variabilidad
+        n_simulaciones = 100
+        resultados_ciclos = [simular_una_vez(velocidad, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura)
+                            for _ in range(n_simulaciones)]
+
+        media_ciclos = np.mean(resultados_ciclos)
+        desviacion = np.std(resultados_ciclos)
+
+                # Histograma de los resultados
+        plt.figure(figsize=(8,5))
+        plt.hist(resultados_ciclos, bins=10, color='skyblue', edgecolor='black', density=True, label="Datos simulados")
+
+        # Distribución teórica (por ejemplo, exponencial con misma media)
+        loc, scale = 0, media_ciclos
+        x = np.linspace(0, max(resultados_ciclos), 100)
+        y = expon.pdf(x, loc=loc, scale=scale)
+        plt.plot(x, y, 'r-', lw=2, label='Distribución Exponencial teórica')
+
+        plt.title("Histograma de Ciclos Simulados vs Exponencial")
+        plt.xlabel("Ciclos de vida")
+        plt.ylabel("Densidad")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+        # Prueba de Kolmogorov–Smirnov
+        ks_stat, p_value = kstest(resultados_ciclos, 'expon', args=(loc, scale))
+
+        print(f"\nEstadístico de prueba KS: {ks_stat:.4f}")
+        print(f"Valor p: {p_value:.6f}")
+
+        if p_value > 0.05:
+            print("✅ No se rechaza la hipótesis nula: los datos podrían provenir de una distribución exponencial.")
+        else:
+            print("❌ Se rechaza la hipótesis nula: los datos NO provienen de una distribución exponencial.")
+
+
+        # Mostrar resumen estadístico
+        label_resultado.config(text=f"Promedio de vida útil: {media_ciclos:.1f} ciclos\n"
+                                    f"Desviación estándar: {desviacion:.1f} ciclos\n"
+                                    f"Simulación base (sin ruido): {ciclos} ciclos\n"
+                                    f"Tiempo total estimado: {tiempo_total_min:.2f} min ({tiempo_total_hr:.2f} h)")
+        
+        # Iniciar la animación del torno
+        animar_torno(ciclos, velocidad, largo, ancho)
+
+    except ValueError:
+        messagebox.showerror("Error de entrada", "Por favor, ingrese todos los valores correctamente.")
+
+# Crear la ventana principal
+ventana = tk.Tk()
+ventana.title("Simulador de Torno con Animación Realista")
+
+# Crear el lienzo para dibujar el torno
+canvas = tk.Canvas(ventana, width=400, height=400, bg='white')
+canvas.grid(row=0, column=2, rowspan=9)
+
+# Dibujar el torno: Círculo grande para el plato
+torno = canvas.create_oval(100, 100, 200, 200, outline='black', width=3)
+
+# Dibujar la broca como un cilindro (rectángulo al principio)
+broca = canvas.create_rectangle(180, 180, 190, 250, fill='gray')
+
+# Dibujar detalles del torno: Eje, base, etc.
+canvas.create_line(150, 150, 150, 250, width=3, fill='black')  # Eje del torno
+canvas.create_oval(140, 250, 160, 270, fill='black')  # Base del torno
+
+# Etiquetas de entrada (como antes)
+label_velocidad = tk.Label(ventana, text="Velocidad de giro (RPM):")
+label_velocidad.grid(row=0, column=0, sticky="e")
+
+label_largo = tk.Label(ventana, text="Largo de la broca (mm):")
+label_largo.grid(row=1, column=0, sticky="e")
+
+label_ancho = tk.Label(ventana, text="Ancho de la broca (mm):")
+label_ancho.grid(row=2, column=0, sticky="e")
+
+label_avance = tk.Label(ventana, text="Avance del torno (mm/rev):")
+label_avance.grid(row=3, column=0, sticky="e")
+
+label_broca = tk.Label(ventana, text="Tipo de material de la broca:")
+label_broca.grid(row=4, column=0, sticky="e")
+
+label_metal = tk.Label(ventana, text="Tipo de metal trabajado:")
+label_metal.grid(row=5, column=0, sticky="e")
+
+label_figura = tk.Label(ventana, text="Tipo de figura:")
+label_figura.grid(row=6, column=0, sticky="e")
+
+label_tiempo = tk.Label(ventana, text="Duración de cada ciclo (minutos):")
+label_tiempo.grid(row=7, column=0, sticky="e")
+
+# Entradas de texto
+entry_velocidad = tk.Entry(ventana)
+entry_velocidad.grid(row=0, column=1)
+
+entry_largo = tk.Entry(ventana)
+entry_largo.grid(row=1, column=1)
+
+entry_ancho = tk.Entry(ventana)
+entry_ancho.grid(row=2, column=1)
+
+entry_avance = tk.Entry(ventana)
+entry_avance.grid(row=3, column=1)
+
+entry_broca = tk.Entry(ventana)
+entry_broca.grid(row=4, column=1)
+
+entry_metal = tk.Entry(ventana)
+entry_metal.grid(row=5, column=1)
+
+entry_figura = tk.Entry(ventana)
+entry_figura.grid(row=6, column=1)
+
+entry_tiempo = tk.Entry(ventana)
+entry_tiempo.grid(row=7, column=1)
+
+# Botón para calcular
+boton_calcular = tk.Button(ventana, text="Calcular", command=calcular)
+boton_calcular.grid(row=8, column=0, columnspan=2)
+
+# Etiqueta para mostrar resultados
+label_resultado = tk.Label(ventana, text="Los resultados aparecerán aquí.", justify="left")
+label_resultado.grid(row=9, column=0, columnspan=2)
+
+# Ejecutar la ventana
+ventana.mainloop()
+
