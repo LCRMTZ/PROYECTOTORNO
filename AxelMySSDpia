@@ -150,14 +150,14 @@ def calcular():
         plt.hist(resultados_ciclos, bins=10, color='skyblue', edgecolor='black', density=True, label="Datos simulados")
 
         # Distribución teórica (por ejemplo, exponencial con misma media)
-        loc, scale = 0, media_ciclos
+        loc, scale = expon.fit(resultados_ciclos)
         x = np.linspace(0, max(resultados_ciclos), 100)
         y = expon.pdf(x, loc=loc, scale=scale)
         plt.plot(x, y, 'r-', lw=2, label='Distribución Exponencial teórica')
 
-        plt.title("Histograma de Ciclos Simulados vs Exponencial")
+        plt.title("Distribución de Ciclos de Vida Simulados vs Teoría")
         plt.xlabel("Ciclos de vida")
-        plt.ylabel("Densidad")
+        plt.ylabel("Probabilidad estimada")
         plt.legend()
         plt.tight_layout()
         plt.show()
@@ -168,18 +168,25 @@ def calcular():
         print(f"\nEstadístico de prueba KS: {ks_stat:.4f}")
         print(f"Valor p: {p_value:.6f}")
 
+        # Asignar texto a la variable (para GUI)
         if p_value > 0.05:
-            print("✅ No se rechaza la hipótesis nula: los datos podrían provenir de una distribución exponencial.")
+            resultado_ks = "✅ No se rechaza la hipótesis nula: los datos podrían provenir de una distribución exponencial."
         else:
-            print("❌ Se rechaza la hipótesis nula: los datos NO provienen de una distribución exponencial.")
+            resultado_ks = "❌ Se rechaza la hipótesis nula: los datos NO provienen de una distribución exponencial."
 
+        # Mostrar también en consola
+        print(resultado_ks)
 
-        # Mostrar resumen estadístico
-        label_resultado.config(text=f"Promedio de vida útil: {media_ciclos:.1f} ciclos\n"
-                                    f"Desviación estándar: {desviacion:.1f} ciclos\n"
-                                    f"Simulación base (sin ruido): {ciclos} ciclos\n"
-                                    f"Tiempo total estimado: {tiempo_total_min:.2f} min ({tiempo_total_hr:.2f} h)")
-        
+        # Mostrar resumen en GUI
+        label_resultado.config(text=(
+            f"Promedio de vida útil: {media_ciclos:.1f} ciclos\n"
+            f"Desviación estándar: {desviacion:.1f} ciclos\n"
+            f"Simulación base (sin ruido): {ciclos} ciclos\n"
+            f"Tiempo total estimado: {tiempo_total_min:.2f} min ({tiempo_total_hr:.2f} h)\n\n"
+            f"Resultado KS: {resultado_ks}\n"
+            f"Valor p = {p_value:.6f}"
+        ))
+
         # Iniciar la animación del torno
         animar_torno(ciclos, velocidad, largo, ancho)
 
