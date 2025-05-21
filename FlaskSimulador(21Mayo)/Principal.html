@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulador de Torno - Proyecto</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background-color: #f1faff; margin: 0; }
+    header { background-color: #c6e6ea; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; }
+    nav { text-align: center; margin: 30px 0; font-weight: 500; letter-spacing: 2px; }
+    nav a { margin: 0 15px; text-decoration: none; color: #000; }
+    h2 { color: #267c9c; text-align: center; }
+    .asistente-container {
+      background: linear-gradient(to right, #d9e7e9, #ffe5dc);
+      margin: 0 auto 50px;
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 900px;
+    }
+    .asistente-texto { max-width: 60%; }
+    .asistente-texto p { margin: 10px 0; }
+    .btn-simulador {
+      background: lime;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .info-section { max-width: 900px; margin: auto; padding: 40px 20px; }
+    .info-section .text { line-height: 1.6; color: #333; }
+    footer {
+      background-color: #c6e6ea; padding: 30px 20px; display: flex;
+      justify-content: space-around; flex-wrap: wrap; font-size: 14px;
+    }
+    .footer-bottom { text-align: center; background: #b5d8de; padding: 10px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    Teléfono: 81 0000 0000 | Correo: simulador@proyectosindustriales.com
+  </header>
+
+  <nav>
+    <a href="{{ url_for('principal') }}">Inicio</a>
+    <a href="{{ url_for('quienes_somos') }}">¿Quiénes somos?</a>
+    <a href="{{ url_for('lanzar_simulador') }}">Ejecutar Simulador</a>
+  </nav>
+
+  <section class="asistente-container">
+    <div class="asistente-texto">
+      <h2>Simulador de Vida Útil en Tornos</h2>
+      <p>
+        Este simulador interactivo permite estimar el desgaste y la vida útil de una broca en un torno, 
+        tomando en cuenta variables reales como velocidad de giro, dimensiones de la herramienta, tipo de material trabajado y figura.
+      </p>
+      <p>
+        Además, se incluyen animaciones visuales y un análisis estadístico que valida los datos simulados contra una distribución teórica.
+      </p>
+      <a href="{{ url_for('lanzar_simulador') }}">
+        <button class="btn-simulador">Iniciar Simulación</button>
+      </a>
+    </div>
+    <img src="{{ url_for('static', filename='IMAGENESWEB/robot.png') }}" alt="Simulador Torno" style="width: 200px; border-radius: 50%;">
+  </section>
+
+  <section class="info-section">
+    <h2>¿Qué Hace Nuestro Simulador?</h2>
+    <img src="IMAGENESWEB/ASISTENTE-AMIGO.jpeg" alt="Asistente" style="position: absolute; top: 650px; left: 780px;" width="250px">
+    <div class="content">
+      <div class="text">
+        <p>
+        💡 Calcula el <strong>desgaste estimado por ciclo</strong> utilizando factores físicos y materiales.
+        </p>
+        <p>
+        📉 Ejecuta simulaciones repetidas para estimar el <strong>promedio de vida útil</strong> y su <strong>variabilidad</strong>.
+        </p>
+      </div>
+      <div class="image"></div>
+    </div>
+  </section>
+
+
+  <section class="info-section">
+    <h2>¿Qué Hace Nuestro Simulador?</h2>
+    <div class="text">
+      <p>
+        💡 Calcula el <strong>desgaste estimado por ciclo</strong> utilizando factores físicos y materiales.
+      </p>
+      <p>
+        📉 Ejecuta simulaciones repetidas para estimar el <strong>promedio de vida útil</strong> y su <strong>variabilidad</strong>.
+      </p>
+      <p>
+        📈 Compara los resultados con una <strong>distribución exponencial</strong> mediante la prueba estadística de Kolmogorov–Smirnov.
+      </p>
+      <p>
+        🎞️ Muestra una <strong>animación visual del torno</strong> con colores que indican el estado de desgaste de la broca.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <strong>Universidad Técnica</strong>
+      <p>Departamento de Ingeniería de Software</p>
+    </div>
+    <div>
+      <strong>Autores</strong>
+      <p>Equipo de desarrollo de simulación industrial</p>
+    </div>
+    <div>
+      <strong>Contacto</strong>
+      <p>simulador@proyectosindustriales.com</p>
+    </div>
+  </footer>
+
+  <div class="footer-bottom">
+    © 2025 Simulador de Torno Educativo | Todos los derechos reservados
+  </div>
+
+</body>
+</html>
