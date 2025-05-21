@@ -1,281 +1,115 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Nuestros Propósitos - Simulador de Fatiga en Tornos</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='estilosPrincipal.css') }}"> <!-- Opcional si usas CSS externo -->
-  <style>
-     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f1faff;
-    }
-
-    header {
-      background-color: #c6e6ea;
-      color: #000;
-      text-align: center;
-      padding: 10px 0;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      text-align: center;
-      color: #267c9c;
-    }
-
-    p {
-      font-size: 18px;
-      line-height: 1.6;
-      color: #333;
-      text-align: justify;
-    }
-
-    .asistente {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .asistente img {
-      width: 150px;
-      height: auto;
-    }
-
-    footer {
-      background-color: #c6e6ea;
-      text-align: center;
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    nav {
-      text-align: center;
-      margin: 30px 0;
-      font-weight: 500;
-      letter-spacing: 2px;
-    }
-
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #000;
-    }
-    body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f0faff;
-}
-
-#contacto {
-  padding: 3rem;
-}
-
-#contacto h2 {
-  text-align: center;
-  color: #0077b6;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-}
-
-.contenedor-contacto {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-
-form {
-  flex: 1 1 300px;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-form label span {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-form input,
-form textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-form button {
-  background-color: #0077b6;
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-form button:hover {
-  background-color: #005f8a;
-}
-
-.ubicacion {
-  flex: 1 1 300px;
-  max-width: 500px;
-}
-
-.ubicacion h3 {
-  margin-bottom: 1rem;
-  color: #023e8a;
-}
-
-.mapa {
-  width: 100%;
-  min-height: 300px;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.mapa iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.encabezado-con-imagen {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.foto-perfil {
-  width: 120px;
-  height: 120px;
-  border-radius: 10px;
-  object-fit: cover;
-  box-shadow: 0 0 8px rgba(0,0,0,0.2);
-}
-  </style>
-</head>
-<body>
-
-  <header>
-    Teléfono: 81 3509 3723 &nbsp;&nbsp;||&nbsp;&nbsp; 📧 Correo: axelcarrillojuarez@gmail.com
-  </header>
-
-  <nav>
-    <a href="{{ url_for('principal') }}">Inicio</a>
-    <a href="{{ url_for('quienes_somos') }}">Nuestros Propósitos</a>
-    <span style="float:right; margin-right: 20px;">⤴</span>
-  </nav>
-
-  <div class="container">
-    <h1>¿Qué proposito tiene? y los antecedentes de nuestro proyecto</h1>
-    <p>
-    Nuestro proyecto nace con el objetivo de desarrollar un <strong>simulador interactivo de torno</strong> que no solo represente visualmente el proceso de desgaste de una herramienta de corte (broca), sino que además incorpore elementos de análisis estadístico para estimar su <strong>vida útil</strong> de manera confiable.
-    </p>
-
-    <p>
-    La decisión de emprender este proyecto surge de la necesidad real que enfrentan muchos procesos industriales: <strong>minimizar tiempos muertos, optimizar el uso de herramientas y garantizar la calidad del producto final</strong>. Las herramientas de corte, al ser sometidas a esfuerzos repetitivos, pueden fallar inesperadamente, afectando la producción y generando costos innecesarios.
-    </p>
-
-    <p>
-    Este simulador busca prevenir esos riesgos al ofrecer un modelo educativo y técnico que permite:
-    <ul>
-      <li>Visualizar el proceso de desgaste progresivo mediante una animación en tiempo real.</li>
-      <li>Estimar de forma estadística cuántos ciclos de trabajo puede soportar una broca bajo ciertas condiciones.</li>
-      <li>Aplicar técnicas de simulación con variabilidad y pruebas estadísticas como Kolmogorov–Smirnov para validar la distribución del desgaste.</li>
-    </ul>
-    </p>
-
-    <p>
-    Con este proyecto, buscamos fortalecer el control de calidad, la seguridad del operario y el <strong>mantenimiento preventivo inteligente</strong> en entornos industriales. La herramienta también tiene un fuerte enfoque pedagógico, siendo útil para la enseñanza de conceptos de ingeniería, manufactura, confiabilidad y simulación estadística.
-    </p>
-
-    <div class="asistente">
-      <img src="{{ url_for('static', filename='IMAGENESWEB/tornoazul.png') }}" alt="tornopersona">
-      <p style="margin-top: 10px; font-style: italic; color: #555;">    Tu herramienta educativa y técnica para el análisis de fatiga y desgaste en tornos. </p>
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2025 Simulador de Torno Interactivo - Todos los derechos reservados
-  </footer>
-
-</body>
-</html>
-
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contacto y Ubicación</title>
-  <link rel="stylesheet" href="contacto.css" />
+  <title>Simulador de Fatiga en Tornos</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome CDN -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <!-- AOS (Animate On Scroll) CSS & JS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      AOS.init();
+    });
+  </script>
 </head>
-<body>
-  <section id="contacto">
-    <h2>Contáctanos</h2>
+<body class="bg-blue-50 text-gray-800 font-sans">
 
-    <div class="contenedor-contacto">
+  <!-- Header -->
+  <header class="bg-cyan-100 py-3 text-center text-sm font-semibold shadow">
+    <p><i class="fas fa-phone-alt"></i> 81 3509 3723 &nbsp;|&nbsp; <i class="fas fa-envelope"></i> axelcarrillojuarez@gmail.com</p>
+  </header>
+
+  <!-- Nav -->
+  <nav class="flex justify-center gap-8 py-4 bg-white shadow font-medium text-gray-700 uppercase tracking-wider">
+    <a href="{{ url_for('principal') }}" class="hover:text-blue-600 transition">Inicio</a>
+    <a href="{{ url_for('quienes_somos') }}" class="hover:text-blue-600 transition">Nuestros Propósitos</a>
+    <span class="ml-auto pr-4 text-xl text-gray-500">⤴</span>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="max-w-5xl mx-auto px-4 py-10 bg-white shadow-lg rounded-xl mt-6 mb-10" data-aos="fade-up">
+
+    <h1 class="text-3xl font-bold text-center text-cyan-800 mb-6">¿Qué propósito tiene? y los antecedentes de nuestro proyecto</h1>
+
+    <p class="mb-4 text-justify text-lg leading-relaxed">
+      Nuestro proyecto nace con el objetivo de desarrollar un <strong class="text-cyan-800">simulador interactivo de torno</strong> que no solo represente visualmente el proceso de desgaste de una herramienta de corte (broca), sino que además incorpore elementos de análisis estadístico para estimar su <strong class="text-cyan-800">vida útil</strong> de manera confiable.
+    </p>
+
+    <p class="mb-4 text-justify text-lg leading-relaxed">
+      La decisión de emprender este proyecto surge de la necesidad real que enfrentan muchos procesos industriales: <strong class="text-cyan-800">minimizar tiempos muertos, optimizar el uso de herramientas y garantizar la calidad del producto final</strong>.
+    </p>
+
+    <ul class="list-disc list-inside mb-6 text-lg leading-relaxed text-gray-700">
+      <li data-aos="fade-right">Visualizar el proceso de desgaste progresivo mediante una animación en tiempo real.</li>
+      <li data-aos="fade-right" data-aos-delay="100">Estimar cuántos ciclos de trabajo puede soportar una broca bajo ciertas condiciones.</li>
+      <li data-aos="fade-right" data-aos-delay="200">Aplicar pruebas estadísticas como Kolmogorov–Smirnov para validar la distribución del desgaste.</li>
+    </ul>
+
+    <p class="mb-4 text-justify text-lg leading-relaxed">
+      Con este proyecto, buscamos fortalecer el control de calidad, la seguridad del operario y el <strong class="text-cyan-800">mantenimiento preventivo inteligente</strong>. La herramienta también tiene un fuerte enfoque pedagógico.
+    </p>
+
+    <!-- Imagen del asistente -->
+    <div class="text-center mt-10" data-aos="zoom-in">
+      <img src="{{ url_for('static', filename='IMAGENESWEB/tornoazul.png') }}" alt="tornopersona" class="mx-auto w-40 mb-4 shadow rounded-lg">
+      <p class="italic text-gray-600">Tu herramienta educativa y técnica para el análisis de fatiga y desgaste en tornos.</p>
+    </div>
+  </main>
+
+  <!-- Contacto -->
+  <section id="contacto" class="bg-white py-12 px-6" data-aos="fade-up">
+    <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Contáctanos</h2>
+
+    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-10">
       <!-- Formulario -->
-      <form>
-        <label>
-          <span>Nombre</span>
-          <input type="text" placeholder="Tu nombre" required />
+      <form class="bg-blue-50 p-6 rounded-lg shadow-md flex-1 space-y-4">
+        <label class="block">
+          <span class="font-semibold">Nombre</span>
+          <input type="text" required placeholder="Tu nombre" class="w-full mt-1 p-2 rounded border border-gray-300">
         </label>
 
-        <label>
-          <span>Correo electrónico</span>
-          <input type="email" placeholder="tucorreo@example.com" required />
+        <label class="block">
+          <span class="font-semibold">Correo electrónico</span>
+          <input type="email" required placeholder="tucorreo@example.com" class="w-full mt-1 p-2 rounded border border-gray-300">
         </label>
 
-        <label>
-          <span>Mensaje</span>
-          <textarea placeholder="Escribe tu mensaje..." rows="5" required></textarea>
+        <label class="block">
+          <span class="font-semibold">Mensaje</span>
+          <textarea rows="5" required placeholder="Escribe tu mensaje..." class="w-full mt-1 p-2 rounded border border-gray-300"></textarea>
         </label>
 
-        <button type="submit">Enviar</button>
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold">
+          <i class="fas fa-paper-plane mr-2"></i>Enviar
+        </button>
       </form>
 
       <!-- Mapa -->
-      <div class="ubicacion">
-        <h3>Ubicación</h3>
-        <div class="mapa">
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold text-blue-800 mb-3">Ubicación</h3>
+        <div class="overflow-hidden rounded-lg shadow-md">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.889554041421!2d-99.13320878553883!3d19.432607086887576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92b0c27e3d9%3A0x8e0a6a5e0eae82a4!2sCentro%20Hist%C3%B3rico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1618232423800!5m2!1ses!2smx"
-            allowfullscreen="" loading="lazy">
-          </iframe>
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.889554041421!2d-99.13320878553883!3d19.432607086887576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92b0c27e3d9%3A0x8e0a6a5e0eae82a4!2sCentro%20Hist%C3%B3rico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1618232423800!5m2!1ses!2smx"
+            width="100%" height="300" allowfullscreen="true" loading="lazy" class="border-0 w-full h-full"></iframe>
         </div>
       </div>
     </div>
   </section>
-</body>
-</html>
 
-
-  <footer>
+  <!-- Footer -->
+  <footer class="bg-cyan-100 text-center text-sm py-4 mt-10">
     &copy; 2025 Simulador de Torno Interactivo - Todos los derechos reservados
   </footer>
 
 </body>
 </html>
+
+
