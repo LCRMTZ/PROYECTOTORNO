@@ -4,6 +4,75 @@ import matplotlib.pyplot as plt
 from scipy.stats import kstest, expon
 from scipy.stats import weibull_min
 from tkinter import ttk
+from tkinter import simpledialog
+
+import os
+import json
+import tkinter.simpledialog
+
+PERFILES_PATH = "perfiles.json"
+perfil_actual = {"nombre": None, "datos": {}}
+etiqueta_perfil_actual = None
+
+def guardar_perfil(nombre, datos):
+    perfiles = {}
+    if os.path.exists(PERFILES_PATH):
+        with open(PERFILES_PATH, "r") as f:
+            perfiles = json.load(f)
+
+    for otro_nombre, otros_datos in perfiles.items():
+        if otros_datos == datos:
+            messagebox.showerror("Duplicado", f"Ya existe un perfil con los mismos datos: '{otro_nombre}'")
+            return
+
+    perfiles[nombre] = datos
+    with open(PERFILES_PATH, "w") as f:
+        json.dump(perfiles, f, indent=4)
+
+
+def cargar_perfiles_disponibles():
+    if os.path.exists(PERFILES_PATH):
+        with open(PERFILES_PATH, "r") as f:
+            return json.load(f)
+    return {}
+
+
+import tkinter.simpledialog
+
+#Función para guardar valores de las entradas en algún perfil seleccionado NO SE PUEDEN DUPLICAR
+def guardar_valor_en_perfil(clave, valor):
+    global perfil_actual
+
+    if not valor.strip():
+        messagebox.showwarning("Valor vacío", "Debes ingresar un valor antes de guardarlo.")
+        return
+
+    if perfil_actual["nombre"] is None:
+        nombre = simpledialog.askstring("Nuevo perfil", "Ingresa el nombre del perfil para guardar:")
+        if not nombre:
+            return
+        perfil_actual["nombre"] = nombre
+        perfil_actual["datos"] = {}
+
+    # Cargar perfiles existentes
+    perfiles = cargar_perfiles_disponibles()
+
+    # Si el perfil ya existe, cargar sus datos completos
+    if perfil_actual["nombre"] in perfiles:
+        perfil_actual["datos"] = perfiles[perfil_actual["nombre"]]
+
+    # Si el campo ya está y es idéntico, no hacer nada
+    if clave in perfil_actual["datos"] and perfil_actual["datos"][clave] == valor:
+        messagebox.showinfo("Sin cambios", f"El campo '{clave}' ya contiene ese valor.")
+        return
+
+    # Actualizar el valor y guardar
+    perfil_actual["datos"][clave] = valor
+    guardar_perfil(perfil_actual["nombre"], perfil_actual["datos"])
+    messagebox.showinfo("Actualizado", f"'{clave}' actualizado en el perfil '{perfil_actual['nombre']}'.")
+
+
+
 
 # Funciones de cálculo (sin cambios)
 def calcular_factor_material_broca(material):
@@ -33,6 +102,7 @@ def calcular_factor_figura(figura):
     }
     return figuras.get(figura.lower(), 1.0)
 
+#Calcula el DESGASTE estimado por CICLO usando los factores y condiciones de corte.
 def calcular_desgaste(velocidad_rpm, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura):
     factor_broca = calcular_factor_material_broca(tipo_broca)
     factor_metal = calcular_factor_metal_trabajado(tipo_metal)
@@ -41,10 +111,11 @@ def calcular_desgaste(velocidad_rpm, largo, ancho, avance, tipo_broca, tipo_meta
     volumen_broca = largo * ancho
     esfuerzo_total = velocidad_rpm * avance * volumen_broca
 
-    # Ajuste realista del desgaste
+    # Ajuste realista del desgaste por ciclo
     desgaste = (esfuerzo_total * factor_metal * factor_figura) / (factor_broca * 1e6)
     return desgaste
 
+#Calcula los CICLOS de VIDA útiles antes de que la broca se desgaste por completo.
 def calcular_ciclos_vida(desgaste):
     desgaste_maximo = 100
     ciclos = int(desgaste_maximo / desgaste) if desgaste > 0 else 0
@@ -102,7 +173,9 @@ def animar_torno(ciclos, velocidad_rpm, largo, ancho):
     # Mensaje al romperse
     canvas.create_text(200, y_inicial - 80, text="¡Broca rota!", fill="red", font=("Arial", 12, "bold"))
 
-#Función agregada para simular varias veces el proceso con pequeñas variaciones aleatorias.
+
+
+#RUIDO GAUSSIANO; Función agregada para simular varias veces el proceso con pequeñas variaciones aleatorias.
 import numpy as np
 
 def simular_una_vez(velocidad, largo, ancho, avance, tipo_broca, tipo_metal, tipo_figura):
@@ -128,7 +201,31 @@ def calcular():
         tipo_metal = entry_metal.get()
         tipo_figura = entry_figura.get()
         tiempo_ciclo = float(entry_tiempo.get())
-        
+        btn_guardar_velocidad = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("velocidad", entry_velocidad.get()))
+        btn_guardar_velocidad.grid(row=0, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_largo = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("largo", entry_largo.get()))
+        btn_guardar_largo.grid(row=1, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_ancho = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("ancho", entry_ancho.get()))
+        btn_guardar_ancho.grid(row=2, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_avance = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("avance", entry_avance.get()))
+        btn_guardar_avance.grid(row=3, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_broca = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("tipo_broca", entry_broca.get()))
+        btn_guardar_broca.grid(row=4, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_metal = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("tipo_metal", entry_metal.get()))
+        btn_guardar_metal.grid(row=5, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_figura = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("tipo_figura", entry_figura.get()))
+        btn_guardar_figura.grid(row=6, column=1, sticky="e", padx=(5, 0))
+
+        btn_guardar_tiempo = tk.Button(ventana, text="💾", command=lambda: guardar_valor_en_perfil("tiempo_ciclo", entry_tiempo.get()))
+        btn_guardar_tiempo.grid(row=7, column=1, sticky="e", padx=(5, 0))
+
+
         #NO DEJAR NÚMEROS NEGATIVOS PARA EL TIEMPO DE CADA CICLO
         if tiempo_ciclo<=0:
             messagebox.showerror("Valor inválido", "La duración de cada ciclo debe ser un número positivo.")
@@ -208,6 +305,7 @@ def calcular():
 
     except ValueError:
         messagebox.showerror("Error de entrada", "Por favor asegurese de que se ingresaron números positivos sin signos e ingrese todos los valores correctamente.")
+   
 
 #### FUNCIÓN PARA EXPORTAR LOS RESULTADOS A UN ARCHIVO CSV
 import csv
@@ -267,9 +365,14 @@ def mostrar_resultados(datos):
             boton.grid(row=i, column=1, padx=(0,10), pady=(2,5), sticky="w")
 
 
+
 # Crear la ventana principal
 ventana = tk.Tk()
 ventana.title("Simulador de Torno con Animación Realista")
+
+#Se crea un texto mostrandonos en que perfil estamos (si estamos en alguno)
+etiqueta_perfil_actual = tk.Label(ventana, text="🔒 Perfil actual: Ninguno", font=("Segoe UI", 9, "bold"), fg="gray")
+etiqueta_perfil_actual.grid(row=0, column=4, padx=10, pady=5, sticky="ne")
 
 # Crear el lienzo para dibujar el torno
 canvas = tk.Canvas(ventana, width=400, height=400, bg='white')
@@ -338,19 +441,128 @@ entry_figura.grid(row=6, column=1)
 entry_tiempo = tk.Entry(ventana)
 entry_tiempo.grid(row=7, column=1)
 
+#Función para eliminar un perfil desde la interfaz del programa
+def eliminar_perfil():
+    perfiles = cargar_perfiles_disponibles()
+    if not perfiles:
+        messagebox.showinfo("Sin perfiles", "No hay perfiles guardados.")
+        return
+
+    ventana_eliminar = tk.Toplevel()
+    ventana_eliminar.title("Eliminar perfil")
+    ventana_eliminar.geometry("300x200")
+
+    tk.Label(ventana_eliminar, text="Selecciona un perfil para eliminar:").pack(pady=10)
+    perfil_a_eliminar = tk.StringVar()
+    combo = ttk.Combobox(ventana_eliminar, textvariable=perfil_a_eliminar, values=list(perfiles.keys()), state="readonly")
+    combo.pack(pady=5)
+
+    def confirmar_eliminacion():
+        nombre = perfil_a_eliminar.get()
+        if nombre:
+            confirmacion = messagebox.askyesno("Confirmar", f"¿Estás seguro de eliminar el perfil '{nombre}'?")
+            if confirmacion:
+                del perfiles[nombre]
+                with open(PERFILES_PATH, "w") as f:
+                    json.dump(perfiles, f, indent=4)
+                messagebox.showinfo("Eliminado", f"Perfil '{nombre}' eliminado.")
+                ventana_eliminar.destroy()
+
+    tk.Button(ventana_eliminar, text="Eliminar perfil", command=confirmar_eliminacion, bg="red", fg="white").pack(pady=10)
+
+
+# ---- CARGAR PERFIL (si existe) ----
+def cargar_datos_perfil(perfil):
+    entry_velocidad.delete(0, tk.END)
+    entry_largo.delete(0, tk.END)
+    entry_ancho.delete(0, tk.END)
+    entry_avance.delete(0, tk.END)
+    entry_tiempo.delete(0, tk.END)
+
+    if "velocidad" in perfil: entry_velocidad.insert(0, perfil["velocidad"])
+    if "largo" in perfil: entry_largo.insert(0, perfil["largo"])
+    if "ancho" in perfil: entry_ancho.insert(0, perfil["ancho"])
+    if "tipo_broca" in perfil: entry_broca.set(perfil["tipo_broca"])
+    if "tipo_metal" in perfil: entry_metal.set(perfil["tipo_metal"])
+    if "tipo_figura" in perfil: entry_figura.set(perfil["tipo_figura"])
+    if "avance" in perfil: entry_avance.insert(0, perfil["avance"])
+    if "tiempo_ciclo" in perfil: entry_tiempo.insert(0, perfil["tiempo_ciclo"])
+
+    global etiqueta_perfil_actual, perfil_actual
+    etiqueta_perfil_actual.config(text=f"🔒 Perfil actual: {perfil_actual['nombre']}", fg="green")
+
+
+
+#Función para seleccionar perfil
+def seleccionar_perfil_existente():
+    perfiles = cargar_perfiles_disponibles()
+    if not perfiles:
+        return  # No hay perfiles guardados
+
+    ventana_perfil = tk.Toplevel()
+    ventana_perfil.title("Seleccionar perfil")
+    ventana_perfil.geometry("300x200")
+
+    tk.Label(ventana_perfil, text="Selecciona un perfil:").pack(pady=10)
+    perfil_seleccionado = tk.StringVar()
+    opciones = list(perfiles.keys())
+    combo = ttk.Combobox(ventana_perfil, textvariable=perfil_seleccionado, values=opciones, state="readonly")
+    combo.pack(pady=5)
+
+    def cargar_y_cerrar():
+        nombre = perfil_seleccionado.get()
+        perfil_actual["nombre"] = nombre
+        perfil_actual["datos"] = perfiles[nombre]
+        cargar_datos_perfil(perfiles[nombre])
+
+        if nombre:
+            cargar_datos_perfil(perfiles[nombre])
+            ventana_perfil.destroy()
+
+    tk.Button(ventana_perfil, text="Cargar perfil", command=cargar_y_cerrar).pack(pady=10)
+
+# Preguntar si quiere cargar perfil
+if messagebox.askyesno("Perfil", "¿Deseas cargar un perfil existente?"):
+    seleccionar_perfil_existente()
+
+#Función para reiniciar el programa por completo
+def reiniciar_perfil():
+    global perfil_actual
+    perfil_actual = {"nombre": None, "datos": {}}
+    etiqueta_perfil_actual.config(text="🔒 Perfil actual: Ninguno", fg="gray")
+    entry_velocidad.delete(0, tk.END)
+    entry_largo.delete(0, tk.END)
+    entry_ancho.delete(0, tk.END)
+    entry_avance.delete(0, tk.END)
+    entry_tiempo.delete(0, tk.END)
+    entry_broca.set("")
+    entry_metal.set("")
+    entry_figura.set("")
+    messagebox.showinfo("Reiniciado", "Se ha reiniciado la sesión del perfil.\nPuedes crear o cargar uno nuevo.")
+
 # Botón para calcular
 boton_calcular = tk.Button(ventana, text="Calcular", command=calcular)
 boton_calcular.grid(row=8, column=0, columnspan=2)
-
-#Botón para exportar los resultados de los 100 datos simulados a un archivo CSV
-boton_exportar = tk.Button(ventana, text="Exportar a CSV", command=exportar_csv)
-boton_exportar.grid(row=10, column=0, columnspan=2)
-
 
 # Frame lateral para botones de ayuda
 frame_botones_info = tk.Frame(ventana, bg="white")
 frame_botones_info.grid(row=9, column=2, padx=(10, 0), sticky="n")
 
+#Botón para exportar los resultados de los 100 datos simulados a un archivo CSV
+boton_exportar = tk.Button(ventana, text="📤 Exportar CSV", command=exportar_csv)
+boton_exportar.grid(row=0, column=3, padx=10, pady=5, sticky="e")
+
+#Botón para cargar perfil desde la interfaz del programa
+boton_cargar = tk.Button(ventana, text="🗂 Cargar perfil", command=seleccionar_perfil_existente)
+boton_cargar.grid(row=1, column=3, padx=10, pady=5, sticky="e")
+
+#Botón para eliminar un perfil desde la interfaz del programa
+boton_borrar = tk.Button(ventana, text="🗑 Borrar perfil", command=eliminar_perfil)
+boton_borrar.grid(row=2, column=3, padx=10, pady=5, sticky="e")
+
+#Botón para reiniciar por completo el programa
+boton_reiniciar = tk.Button(ventana, text="🔄 Reiniciar perfil", command=reiniciar_perfil, bg="#8b0000", fg="white")
+boton_reiniciar.grid(row=3, column=3, padx=10, pady=5, sticky="e")
+
 # Ejecutar la ventana
 ventana.mainloop()
-
