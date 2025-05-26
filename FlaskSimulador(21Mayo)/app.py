@@ -16,10 +16,10 @@ def quienes_somos():
 def ejecutar_simulacion():
     try:
         # Abre el simulador en una ventana independiente
-        subprocess.Popen(["python", "SimuladorFatiga.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+        subprocess.Popen(["python", "menu.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
         return redirect(url_for("principal"))  # O simplemente: return redirect("/")
     except Exception as e:
         return f"Error al ejecutar el simulador: {e}"
-
+    
 if __name__ == "__main__":
     app.run(debug=True)

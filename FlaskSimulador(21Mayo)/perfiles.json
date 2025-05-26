@@ -1,0 +1,12 @@
+{
+    "LUCIANO": {
+        "velocidad": "7",
+        "largo": "1",
+        "ancho": "1",
+        "avance": "1",
+        "tiempo_ciclo": "0.5",
+        "tipo_figura": "cubo",
+        "tipo_metal": "titanio",
+        "tipo_broca": "diamante"
+    }
+}
