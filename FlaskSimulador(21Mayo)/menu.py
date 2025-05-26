@@ -11,6 +11,10 @@ def ejecutar_capacitacion():
     script_path = os.path.join(os.path.dirname(__file__), "torsnCapacitacion.py")
     subprocess.Popen([sys.executable, script_path])
 
+def ejecutar_costos():
+    script_path = os.path.join(os.path.dirname(__file__), "torsnCostos.py")
+    subprocess.Popen([sys.executable, script_path])
+
 def main():
     root = tk.Tk()
     root.title("Menú Principal - TORSN")
@@ -23,6 +27,9 @@ def main():
     btn_simulador.pack(pady=10)
 
     btn_capacitacion = tk.Button(root, text="TORSN Capacitación", width=25, height=2, command=ejecutar_capacitacion)
+    btn_capacitacion.pack(pady=5)
+
+    btn_capacitacion = tk.Button(root, text="TORSN Costos", width=25, height=2, command=ejecutar_costos)
     btn_capacitacion.pack(pady=5)
 
     root.mainloop()
